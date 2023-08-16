@@ -1,4 +1,6 @@
-[
+import { Request } from "../models/request.model";
+
+export const REQUESTS: Request[] = [
     {
         "userEmail": "melissa.brown@example.com",
         "amount": 2500.00,

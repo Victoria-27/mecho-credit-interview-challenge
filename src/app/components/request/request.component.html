@@ -1,0 +1,32 @@
+<form >
+    <div>
+        <label for="userEmail">User Email</label>
+        <input type="email" id="userEmail" formControlName="userEmail" />
+        <div *ngIf="requestForm.get('userEmail')?.hasError('required')">User Email is required.</div>
+    </div>
+    <div>
+        <label for="amount">Amount</label>
+        <input type="number" id="amount" formControlName="amount" />
+        <div *ngIf="requestForm.get('amount')?.hasError('required')">Amount is required.</div>
+        <div *ngIf="requestForm.get('amount')?.hasError('min')">Amount must be greater than or equal to 0.</div>
+    </div>
+    <div>
+        <label for="method">Method</label>
+        <select formControlName="method" id="method">
+            <option value="cash">Cash</option>
+            <option value="credit">Credit</option>
+        </select>
+        <div *ngIf="requestForm.get('method')?.hasError('required')">Method is required</div>
+    </div>
+    <div>
+        <label for="type">Type</label>
+        <select formControlName="type" id="type">
+            <option value="inspection">Inspection</option>
+            <option value="servicing">Servicing</option>
+            <option value="repairs">Repairs</option>
+            <option value="maintenance">Maintenance</option>
+        </select>
+        <div *ngIf="requestForm.get('type')?.hasError('required')">Type is required</div>
+    </div>
+    <button type="submit">Create Request</button>
+</form>

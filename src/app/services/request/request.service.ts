@@ -13,7 +13,10 @@ export class RequestService {
     this.requests = REQUESTS;
 
     // Initialize requests from session storage
-    
+    const storedRequests = sessionStorage.getItem('requests');
+    if (storedRequests) {
+      this.requests = JSON.parse(storedRequests);
+    }
   }
 
 
@@ -30,7 +33,7 @@ export class RequestService {
       this.requests.push(request);
 
          // Update requests data in session storage
-          sessionStorage.setItem('requests', JSON.stringify(this.requests));
+        this.updateRequestInSessionStorage();
           return true;
 
     } catch (error) {
@@ -38,6 +41,9 @@ export class RequestService {
         console.error('error creating request',error);
         return false;
     }
+  }
+  private updateRequestInSessionStorage() {
+    sessionStorage.setItem('requests', JSON.stringify(this.requests));
   }
 }
 

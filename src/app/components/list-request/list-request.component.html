@@ -1,0 +1,12 @@
+<div class="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
+    <h2 class="text-xl font-bold mb-4">Request List</h2>
+    <ul>
+        <li *ngFor="let request of requests" class="border p-4 mb-4 rounded-lg shadow-md">
+            <p class="text-gray-700"><span class="font-bold">User Email:</span> {{request.userEmail}}</p>
+            <p class="text-gray-700"><span class="font-bold">Amount:</span> {{request.amount | currency}}</p>
+            <p class="text-gray-700"><span class="font-bold">Method:</span> {{request.method}}</p>
+            <p class="text-gray-700"><span class="font-bold">Type:</span> {{request.type}}</p>
+            <p class="text-gray-700"><span class="font-bold">Created At:</span> {{request.createdAt | date}}</p>
+        </li>
+    </ul>
+</div>

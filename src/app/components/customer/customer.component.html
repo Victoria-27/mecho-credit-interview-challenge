@@ -1,4 +1,5 @@
-<div *ngFor="let customer of customers">
-    <p>{{customer.userEmail}}</p>
-    <p>Balance: {{customer.balance}}</p>
+<div *ngFor="let customer of customers" class="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
+    <h2 class="text-xl font-bold mb-2">Customer Details</h2>
+    <p class="text-gray-700"><span class="font-bold">Email:</span> {{customer.userEmail}}</p>
+    <p class="text-gray-700"><span class="font-bold">Balance:</span> {{customer.balance | currency}}</p>
 </div>

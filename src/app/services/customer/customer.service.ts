@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Customer } from 'src/app/models/customer.model';
 import { CUSTOMERS } from 'src/app/data/customer.data';
 
@@ -9,9 +8,13 @@ import { CUSTOMERS } from 'src/app/data/customer.data';
 export class CustomerService {
   private customers: Customer[] = [];
     
-  constructor(private http: HttpClient) { 
+  constructor() { 
     this.customers = CUSTOMERS;
     // Initialize customers from session storage 
+    const storedCustomers = sessionStorage.getItem('customers');
+    if (storedCustomers) {
+      this.customers = JSON.parse(storedCustomers);
+    }
   }
 
   getCustomers(): Customer[] {
@@ -32,9 +35,13 @@ export class CustomerService {
       customer.balance -= amount;
     }
 // Update customer data in session storage
+    this.updateCustomerInSessionStorage();
 
 return true;
 
+  }
+  private updateCustomerInSessionStorage(): void {
+    sessionStorage.setItem('customers', JSON.stringify(this.customers));
   }
 
 }

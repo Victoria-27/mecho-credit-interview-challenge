@@ -1,5 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
 import { RequestService } from 'src/app/services/request/request.service';
 import { Request } from 'src/app/models/request.model';
 import { CustomerService } from 'src/app/services/customer/customer.service';
@@ -11,12 +16,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './request.component.html',
   styleUrls: ['./request.component.scss'],
 })
-
 export class RequestComponent implements OnInit, OnDestroy {
   requestForm!: FormGroup;
   customers: Customer[] = [];
   request: Request[] = [];
-  globalSubscriptions: Subscription[] = []
+  globalSubscriptions: Subscription[] = [];
+  methodSelected = false;
+  typeSelected = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -31,32 +37,51 @@ export class RequestComponent implements OnInit, OnDestroy {
       this.request = requests;
     });
 
+    this.methodSelected = false;
+    this.typeSelected = false;
+
     this.requestForm = this.formBuilder.group({
       amount: [null, [Validators.required, Validators.min(0)]],
-      method: ['credit', Validators.required],
-      type: ['repairs', Validators.required]
+      method: [null, [Validators.required]],
+      type: [null, [Validators.required]],
     });
 
-    this.globalSubscriptions.push(this.requestForm.controls['type'].valueChanges.subscribe({
+    this.requestForm.controls['method'].valueChanges.subscribe({
+      next: (method: string) => {
+        this.methodSelected = !!method; // Update methodSelected
+        this.getServiceCost(method);
+      },
+    });
+
+    this.requestForm.controls['type'].valueChanges.subscribe({
       next: (type: string) => {
-        console.log(type);
+        this.typeSelected = !!type; // Update typeSelected
         this.getServiceCost(type);
-      }
-    }));
+      },
+    });
+
+    this.globalSubscriptions.push(
+      this.requestForm.controls['type'].valueChanges.subscribe({
+        next: (type: string) => {
+          console.log(type);
+          this.getServiceCost(type);
+        },
+      })
+    );
   }
+
+  errorCreatingRequest = false;
 
   createRequest() {
     if (this.requestForm.valid) {
       const request: Request = this.requestForm.value;
       if (this.requestService.createRequest(request)) {
         this.customers = this.customerService.getCustomers();
+        this.errorCreatingRequest = false;
       } else {
         // Handle error
-        alert('Error creating request. Please check your balance and try again');
+        this.errorCreatingRequest = true;
       }
-    } else {
-      // Handle from validation errors
-      alert('Please fill all the required fields and fix validation errors');
     }
   }
 
@@ -83,7 +108,16 @@ export class RequestComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Create getter methods for the form controls
+  get methodControl(): AbstractControl | null {
+    return this.requestForm.get('method');
+  }
+
+  get typeControl(): AbstractControl | null {
+    return this.requestForm.get('type');
+  }
+
   ngOnDestroy(): void {
-    this.globalSubscriptions.forEach(x => x.unsubscribe());
+    this.globalSubscriptions.forEach((x) => x.unsubscribe());
   }
 }

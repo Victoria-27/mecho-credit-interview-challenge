@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CustomerService } from '../../services/customer/customer.service';
 import { Customer } from '../../models/customer.model';
-import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-customer',
@@ -9,11 +8,12 @@ import { Observable, of } from 'rxjs';
   styleUrls: ['./customer.component.scss']
 })
 export class CustomerComponent implements OnInit {
-  customers$: Observable<Customer[]> = of([]);
+  customers: Customer[] = [];
 
-  constructor(private customerService: CustomerService) { }
 
-  ngOnInit(): void {
-    this.customers$ = this.customerService.getCustomers$();
-  }
+constructor(private customerService: CustomerService) { }
+
+ngOnInit(): void {
+  this.customers = this.customerService.getCustomers();
+}
 }

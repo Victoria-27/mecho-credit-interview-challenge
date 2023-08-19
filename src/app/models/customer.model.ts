@@ -1,6 +1,6 @@
 export interface Customer {
-    userEmail: string;
-    balance: number;
-    createdAt: string;
-    updatedAt: string;
+    userEmail?: string;
+    balance?: number;
+    createdAt?: string;
+    updatedAt?: string;
 }

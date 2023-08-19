@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Customer } from 'src/app/models/customer.model';
-import { CUSTOMERS } from 'src/app/data/customer.data';
+import { CUSTOMER } from 'src/app/data/customer.data';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -12,7 +12,7 @@ export class CustomerService {
   customers$: Observable<Customer[]> = this.customersSubject.asObservable();
     
   constructor() { 
-    this.customers = CUSTOMERS;
+    this.customers = CUSTOMER;
 
     // Initialize customers from session storage 
     const storedCustomers = sessionStorage.getItem('customers');
@@ -31,7 +31,7 @@ export class CustomerService {
   }
 
   updateBalance(userEmail: string, amount: number, method: string): boolean {
-    const customer = this.customers.find(cust => cust.userEmail === userEmail);
+    const customer:any = this.customers.find(cust => cust.userEmail === userEmail);
     if (!customer) {
       throw new Error('Customer not found');
     }

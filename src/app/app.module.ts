@@ -6,6 +6,8 @@ import { CustomerComponent } from './components/customer/customer.component';
 import { RequestComponent } from './components/request/request.component';
 import { ListRequestComponent } from './components/list-request/list-request.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { PageHeaderComponent } from './components/page-header/page-header.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -13,10 +15,12 @@ import { ReactiveFormsModule } from '@angular/forms';
     CustomerComponent,
     RequestComponent,
     ListRequestComponent,
+    PageHeaderComponent,
   ],
   imports: [BrowserModule, 
     HttpClientModule, 
-    ReactiveFormsModule],
+    ReactiveFormsModule,
+    FormsModule],
   providers: [],
   bootstrap: [AppComponent],
 })

@@ -2,7 +2,7 @@
     <!-- General Notification Area -->
     <div *ngIf="requestForm.invalid || (!methodSelected && methodControl?.dirty) || (!typeSelected && typeControl?.dirty)"
          class="text-black-500 text-sm mb-4">
-        Please fill all the required fields
+        Please fill all the below fields
     </div>
     
     <div class="mb-4">
@@ -33,15 +33,6 @@
         class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 disabled:opacity-50 cursor-not-allowed">
     Create Request
     </button>
-    
-    <!-- Specific Real-Time Validation (if needed) -->
-    <div *ngIf="methodControl?.value && methodControl?.invalid && methodControl?.dirty" class="text-red-500 text-sm mt-1">
-        Please enter a valid method.
-    </div>
-    
-    <div *ngIf="typeControl?.value && typeControl?.invalid && typeControl?.dirty" class="text-red-500 text-sm mt-1">
-        Please enter a valid type.
-    </div>
     
     <div *ngIf="errorCreatingRequest" class="text-red-500 text-sm mt-1">
         Error creating request. Please check your balance and try again.

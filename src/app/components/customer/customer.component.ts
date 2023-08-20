@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class CustomerComponent implements OnInit, OnDestroy {
 
-  customerDetail:Customer = {};
+  customerDetail: Customer = {};
   private selectedCustomerSubscription: Subscription;
 
 
@@ -26,17 +26,25 @@ constructor(private customerService: CustomerService, private sharedService: Sha
 ngOnInit(): void {
   this.getUserDetails();
   }
-  getUserDetails(){
-    let customers = (sessionStorage.getItem('customerData'));
+  getUserDetails() {
+    let customers = sessionStorage.getItem('customerData');
+  
     let selectedCustomer: any = sessionStorage.getItem('selectedCustomer');
-    console.log('selectedCustomer',selectedCustomer)
     if (customers !== null && selectedCustomer !== null) {
-      this.customerDetail = JSON.parse(customers).filter((customer: any) => {
-        return customer.userEmail === JSON.parse(selectedCustomer);
-        })[0];
+      const selectedEmail = JSON.parse(selectedCustomer);
+      
+      const customerData = JSON.parse(customers);
+      const selectedCustomerData = customerData.find((customer: any) => customer.userEmail === selectedEmail);
+      
+      if (selectedCustomerData) {
+        this.customerDetail = {
+          userEmail: selectedCustomerData.userEmail,
+          balance: selectedCustomerData.balance,
+        };
+      }
     }
-    console.log('customerDetail',this.customerDetail)
   }
+  
 
   ngOnDestroy(): void {
     this.selectedCustomerSubscription.unsubscribe();

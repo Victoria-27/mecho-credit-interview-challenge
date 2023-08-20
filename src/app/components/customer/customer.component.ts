@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 export class CustomerComponent implements OnInit, OnDestroy {
 
   customerDetail: Customer = {};
+  chargedAmount: number = 0;
   private selectedCustomerSubscription: Subscription;
 
 
@@ -41,6 +42,7 @@ ngOnInit(): void {
           userEmail: selectedCustomerData.userEmail,
           balance: selectedCustomerData.balance,
         };
+        sessionStorage.setItem('selectedCustomerDetails', JSON.stringify(selectedCustomerData));
       }
     }
   }

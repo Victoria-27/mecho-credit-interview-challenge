@@ -1,7 +1,7 @@
 <header>
     <h1>Mech Auto Tech</h1>
     <div>
-        <select [value]="selectedCustomer" [(ngModel)]="selectedCustomer" (change)="setSelectedCustomer()">
+        <select [(ngModel)]="selectedCustomer" (change)="setSelectedCustomer()">
             <option value="">Select Customer</option>
             <option *ngFor="let data of customerEmailOptions$ | async" [value]="data.value">{{data.label}}</option>
         </select>

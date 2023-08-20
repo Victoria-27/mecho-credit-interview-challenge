@@ -12,7 +12,6 @@ export class PageHeaderComponent implements OnInit {
   customerEmailOptions$: Observable<{ label: string; value: string }[]> = of(
     []
   );
-  displayDetails = false;
   selectedCustomer = '';
 
   constructor(private sharedService: SharedService) {}

@@ -12,4 +12,10 @@ export class SharedService {
   setButtonText(text: string) {
     this.buttonTextSubject.next(text);
   }
+  private selectedCustomerSubject = new BehaviorSubject<any>(null);
+  selectedCustomer$: Observable<void> = this.selectedCustomerSubject.asObservable();
+
+  setSelectedCustomer() {
+    this.selectedCustomerSubject.next(null);
+  }
 }

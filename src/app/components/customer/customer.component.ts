@@ -1,20 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CustomerService } from '../../services/customer/customer.service';
 import { Customer } from '../../models/customer.model';
+import { SharedService } from 'src/app/services/sharedService/shared.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-customer',
   templateUrl: './customer.component.html',
   styleUrls: ['./customer.component.scss']
 })
-export class CustomerComponent implements OnInit {
+export class CustomerComponent implements OnInit, OnDestroy {
 
-  // userEmail: string = '';
-  // customers: Customer[] = [];
   customerDetail:Customer = {};
+  private selectedCustomerSubscription: Subscription;
 
 
-constructor(private customerService: CustomerService) { }
+constructor(private customerService: CustomerService, private sharedService: SharedService) {
+  this.selectedCustomerSubscription = this.sharedService.selectedCustomer$.subscribe(
+    () => {
+      this.getUserDetails();
+    }
+  );
+ }
 
 ngOnInit(): void {
   this.getUserDetails();
@@ -29,5 +36,9 @@ ngOnInit(): void {
         })[0];
     }
     console.log('customerDetail',this.customerDetail)
+  }
+
+  ngOnDestroy(): void {
+    this.selectedCustomerSubscription.unsubscribe();
   }
 }

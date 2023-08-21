@@ -7,6 +7,7 @@ import { Customer } from 'src/app/models/customer.model';
 import { Subscription } from 'rxjs';
 import { SharedService } from 'src/app/services/sharedService/shared.service';
 
+
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
@@ -21,13 +22,26 @@ export class RequestComponent implements OnInit, OnDestroy {
   typeSelected = false;
   selectedCustomer: string | null = null;
   initialBalance: number | '' = '';
+  private selectedCustomerSubscription: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
     private requestService: RequestService,
     private customerService: CustomerService,
     private sharedService: SharedService
-  ) {}
+  ) {
+    this.selectedCustomerSubscription = this.sharedService.selectedCustomer$.subscribe(
+      () => {
+        this.sharedService.requestsSubject$.subscribe(
+          () => {
+            this.requestForm.reset();
+          }
+        );
+
+
+      }
+    );
+  }
 
   ngOnInit() {
     this.customers = this.customerService.getCustomers();
@@ -66,19 +80,6 @@ export class RequestComponent implements OnInit, OnDestroy {
         },
       })
     );
-
-    // this.sharedService.selectedCustomer$.subscribe((selectedCustomer) => {
-      // this.selectedCustomer = selectedCustomer;
-      
-      // Retrieve the initial balance based on the selected customer's email
-    //   const selectedCustomerData = sessionStorage.getItem('selectedCustomerData');
-    //   if (selectedCustomerData) {
-    //     const customerData = JSON.parse(selectedCustomerData);
-    //     if (customerData.userEmail === selectedCustomer) {
-    //       this.initialBalance = customerData.balance;
-    //     }
-    //   }
-    // });
   }
 
   errorCreatingRequest = false;
@@ -93,12 +94,6 @@ export class RequestComponent implements OnInit, OnDestroy {
 
     if (this.requestForm.valid) {
       const request: Request = this.requestForm.value;
-      // console.log('REQUEST', request)
-      // this.sharedService.setRequestForm(request);
-      // const userEmail = request.userEmail;
-      // const amount = request.amount;
-      // let customerData = sessionStorage.getItem('selectedCustomerData');
-      // Retrieve the selected customer's data from session storage
       if(Number(this.initialBalance) < Number(request.amount)) {
         console.error('Insufficient balance');
         return;
@@ -109,7 +104,7 @@ export class RequestComponent implements OnInit, OnDestroy {
         const allCustomers = [...JSON.parse(allCustomerData)];
         const selectedCustomerData = allCustomers.find((customer: any) => customer.userEmail === this.selectedCustomer);
         console.log('SELECTED CUSTOMER DATA', selectedCustomerData)
-        selectedCustomerData.balance = Number(this.initialBalance) - Number(request.amount);
+        selectedCustomerData.balance = request.method === 'credit' ?  Number(this.initialBalance) - Number(request.amount) : this.initialBalance;
         sessionStorage.setItem('selectedCustomerDetails', JSON.stringify(selectedCustomerData));
         allCustomers.forEach((customer: any) => {
           if (customer.userEmail === this.selectedCustomer) {
@@ -128,9 +123,11 @@ export class RequestComponent implements OnInit, OnDestroy {
             type: request.type,
             createdAt: new Date(),
           });
-          sessionStorage.setItem('requestsData', JSON.stringify(allRequests));
+          this.sharedService.setRequests(allRequests);
           this.requestService.updateRequestSessionStorage();
+          sessionStorage.setItem('requestsData', JSON.stringify(allRequests));
         }
+        return this.requestForm.reset();
 
       }
     }

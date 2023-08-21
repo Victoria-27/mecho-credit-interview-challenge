@@ -18,25 +18,29 @@ export class ListRequestComponent implements OnInit, OnDestroy {
   constructor(private requestService: RequestService, private sharedService: SharedService) {
     this.selectedCustomerSubscription = this.sharedService.selectedCustomer$.subscribe(
       () => {
-        this.getUpdatedRequests();
+        this.sharedService.requestsSubject$.subscribe(
+          (requests: []) => {
+            let selectedCustomer = sessionStorage.getItem('selectedCustomer');
+            selectedCustomer = selectedCustomer !== null ? JSON.parse(selectedCustomer) : '';
+            console.log('selectedCustomer', selectedCustomer)
+            let filteredRequest = requests.filter((request: any) => {
+              
+              return request.userEmail === selectedCustomer;
+            });
+            console.log('filteredRequest', filteredRequest)
+            this.requests = filteredRequest;
+            // sessionStorage.setItem('requestsData', JSON.stringify(filteredRequest));
+          }
+        );
+
+
       }
     );
   }
 
   ngOnInit(): void {
 
-    // this.requestsSubscription = this.requestService.getRequests$().subscribe((requests) => {
-    //   this.requests = requests;
-    // });
-
-    // this.requestService.updateRequestSessionStorage();
-
-    // 
     this.requests = this.requestService.updateRequestSessionStorage();
-  }
-  async getUpdatedRequests() {
-    this.requests = await this.requestService.updateRequestSessionStorage();
-    return this.requests;
   }
 
   

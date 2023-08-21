@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { REQUESTS } from 'src/app/data/requests.data';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +19,18 @@ export class SharedService {
   private requestFormSubject = new BehaviorSubject<any | null>(null);
   requestForm$: Observable<any | null> = this.requestFormSubject.asObservable();
 
+  private requestsSubject = new BehaviorSubject<any | null>(REQUESTS);
+  requestsSubject$: Observable<any | null> = this.requestsSubject.asObservable();
+
+  setRequests(requests: Request[]) {
+    this.requestsSubject.next(requests);
+  }
+
   setRequestForm(requestForm: any) {
     console.log('requestForm', requestForm);
     this.requestFormSubject.next(requestForm);
   }
+
 
   setButtonText(text: string) {
     this.buttonTextSubject.next(text);

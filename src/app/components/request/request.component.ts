@@ -94,7 +94,7 @@ export class RequestComponent implements OnInit, OnDestroy {
 
     if (this.requestForm.valid) {
       const request: Request = this.requestForm.value;
-      if(Number(this.initialBalance) < Number(request.amount)) {
+      if(Number(this.initialBalance) < Number(request.amount) && request.method === 'credit') {
         console.error('Insufficient balance');
         return;
       }

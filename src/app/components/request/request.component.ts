@@ -31,8 +31,8 @@ export class RequestComponent implements OnInit, OnDestroy {
     private usersService: UsersService
   ) {
     this.usersService.resetFormSubject$.subscribe((state) => {
-      if (state){
-        this.requestForm.reset();
+      if (state) {
+        this.resetForm();
       }
     });
   }
@@ -50,6 +50,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.requestForm.controls['method'].valueChanges.subscribe({
       next: (method: string) => {
         this.methodSelected = !!method;
+        this.insufficientBalance = false;
         this.getServiceCost(method);
       },
     });
@@ -57,6 +58,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.requestForm.controls['type'].valueChanges.subscribe({
       next: (type: string) => {
         this.typeSelected = !!type;
+        this.insufficientBalance = false;
         this.getServiceCost(type);
       },
     });
@@ -99,10 +101,14 @@ export class RequestComponent implements OnInit, OnDestroy {
             JSON.stringify(selectedCustomer)
           );
           this.usersService.setSelectedCustomer(selectedCustomer);
-          this.requestForm.reset();
+          this.resetForm();
         });
-        this.insufficientBalance = false;
     }
+  }
+
+  private resetForm() {
+    this.requestForm.reset();
+    this.insufficientBalance = false;
   }
 
   private getServiceCost(type: string) {

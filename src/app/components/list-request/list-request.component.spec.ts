@@ -22,6 +22,15 @@ describe('ListRequestComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ListRequestComponent);
     component = fixture.componentInstance;
+
+    spyOn(sessionStorage, 'getItem').and.returnValue(
+      JSON.stringify([
+        { /* request data object 1 */ },
+        { /* request data object 2 */ },
+        // ... other request data objects
+      ])
+    );
+
     fixture.detectChanges();
   });
 

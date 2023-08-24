@@ -1,4 +1,4 @@
-<form [formGroup]="requestForm" (ngSubmit)="createRequest()" class="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
+<form [formGroup]="requestForm" (ngSubmit)="createRequest()" class="max-w-md mx-auto p-6 bg-white shadow-md mt-6 rounded-lg">
     <!-- General Notification Area -->
     <div *ngIf="requestForm.invalid || (!methodSelected && methodControl?.dirty) || (!typeSelected && typeControl?.dirty)"
         class="text-black-500 text-sm mb-4">

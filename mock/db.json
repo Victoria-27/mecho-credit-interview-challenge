@@ -3,10 +3,17 @@
     {
       "id": 1,
       "userEmail": "melissa.brown@example.com",
-      "balance": 85000,
+      "balance": 81000,
       "createdAt": "2021-08-01T00:00:00.000Z",
       "updatedAt": "2021-10-01T00:00:00.000Z",
       "requests": [
+        {
+          "amount": 4000,
+          "method": "credit",
+          "type": "servicing",
+          "userEmail": "melissa.brown@example.com",
+          "createdAt": "Thu Aug 24 2023 23:30:25 GMT+0100 (West Africa Standard Time)"
+        },
         {
           "amount": 10000,
           "method": "cash",
@@ -68,10 +75,17 @@
     {
       "id": 2,
       "userEmail": "johndoe.brown@example.com",
-      "balance": 46000,
+      "balance": 42000,
       "createdAt": "2021-08-01T00:00:00.000Z",
       "updatedAt": "2021-10-01T00:00:00.000Z",
       "requests": [
+        {
+          "amount": 4000,
+          "method": "credit",
+          "type": "servicing",
+          "userEmail": "johndoe.brown@example.com",
+          "createdAt": "Thu Aug 24 2023 23:30:44 GMT+0100 (West Africa Standard Time)"
+        },
         {
           "amount": 4000,
           "method": "credit",

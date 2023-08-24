@@ -1,6 +1,6 @@
-<h2 class="text-xl font-bold mb-4">Request List</h2>
-<ul>
-  <li *ngFor="let request of requests" class="border p-4 mb-4 rounded-lg shadow-md">
+<h2 class="text-xl font-bold mb-4 text-center mt-8">Request List</h2>
+<ul class="flex flex-col items-center">
+  <li *ngFor="let request of requests" class="border p-4 mb-4 rounded-lg w-fit shadow-md">
     <ng-container *ngIf="request">
       <p class="text-blue-500"><span class="font-bold">User Email:</span> {{ request.userEmail }}</p>
       <p class="text-white"><span class="font-bold">Amount:</span> {{ request.amount | currency }}</p>

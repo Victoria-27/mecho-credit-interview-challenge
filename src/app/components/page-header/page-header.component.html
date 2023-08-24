@@ -1,5 +1,5 @@
-<div class="bg-gray-800 text-white p-4">
-    <header *ngIf="customers" class="bg-blue-500 py-4 px-6 text-black">
+<div class="bg-gray-800 text-white p-4 ">
+    <header *ngIf="customers" class="bg-blue-500 py-4 px-6 text-black flex flex-col items-center">
       <h1 class="text-3xl font-semibold">Mecho Auto Tech</h1>
       <div class="mt-4">
         <select [(ngModel)]="selectedCustomer" (change)="setSelectedCustomer()" class="py-2 px-4 rounded border">
@@ -8,10 +8,12 @@
         </select>
       </div>
     </header>
+
     
     <div *ngIf="selectedCustomer" class="mt-8">
       <app-customer></app-customer>
       <app-request></app-request>
       <app-list-request></app-list-request>
     </div>
+</div>
     

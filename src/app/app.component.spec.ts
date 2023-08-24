@@ -1,13 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { Component,OnInit } from '@angular/core';
-import { CUSTOMER } from './data/customer.data';
-import { REQUESTS } from './data/requests.data';
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { CustomerComponent } from './components/customer/customer.component';
 import { RequestComponent } from './components/request/request.component';
 import { ListRequestComponent } from './components/list-request/list-request.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -19,7 +18,7 @@ describe('AppComponent', () => {
       ,RequestComponent
       ,ListRequestComponent
     ],
-    imports: [ReactiveFormsModule,FormsModule],
+    imports: [ReactiveFormsModule,FormsModule,HttpClientModule],
     providers: []
   }).compileComponents()
   );

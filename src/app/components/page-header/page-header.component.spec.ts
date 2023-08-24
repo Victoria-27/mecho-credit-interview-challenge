@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { SharedService } from 'src/app/services/sharedService/shared.service';
+import { Customer } from 'src/app/models/customer.model';
+import { UsersService } from 'src/app/services/users.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing'; // Import HttpClientTestingModule
 
 describe('PageHeaderComponent', () => {
   let component: PageHeaderComponent;
@@ -13,8 +15,9 @@ describe('PageHeaderComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [PageHeaderComponent]
+      imports: [FormsModule, HttpClientTestingModule],
+      declarations: [PageHeaderComponent],
+      providers: [UsersService],
     });
     fixture = TestBed.createComponent(PageHeaderComponent);
     component = fixture.componentInstance;

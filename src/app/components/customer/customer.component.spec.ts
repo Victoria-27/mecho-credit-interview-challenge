@@ -1,18 +1,24 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { CustomerComponent } from './customer.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CustomerService } from '../../services/customer/customer.service';
 import { Customer } from '../../models/customer.model';
-import { SharedService } from 'src/app/services/sharedService/shared.service';
-import { Subscription } from 'rxjs';
+import { Subscription, of } from 'rxjs';
+import { UsersService } from 'src/app/services/users.service';
+
+// Create a mock for the UsersService
+class UsersServiceMock {
+  selectedCustomer$ = of({} as Customer);
+}
+
 describe('CustomerComponent', () => {
   let component: CustomerComponent;
   let fixture: ComponentFixture<CustomerComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CustomerComponent]
+      declarations: [CustomerComponent],
+      imports: [],
+      providers: [{ provide: UsersService, useClass: UsersServiceMock }],
     });
     fixture = TestBed.createComponent(CustomerComponent);
     component = fixture.componentInstance;

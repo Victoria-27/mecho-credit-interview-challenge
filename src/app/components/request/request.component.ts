@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { RequestService } from 'src/app/services/request/request.service';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+} from '@angular/forms';
 import { Request } from 'src/app/models/request.model';
-import { CustomerService } from 'src/app/services/customer/customer.service';
 import { Customer } from 'src/app/models/customer.model';
 import { Subscription } from 'rxjs';
-import { SharedService } from 'src/app/services/sharedService/shared.service';
-
+import { UsersService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'app-request',
@@ -22,34 +24,20 @@ export class RequestComponent implements OnInit, OnDestroy {
   typeSelected = false;
   selectedCustomer: string | null = null;
   initialBalance: number | '' = '';
-  private selectedCustomerSubscription: Subscription;
+  insufficientBalance = false;
 
   constructor(
     private formBuilder: FormBuilder,
-    private requestService: RequestService,
-    private customerService: CustomerService,
-    private sharedService: SharedService
+    private usersService: UsersService
   ) {
-    this.selectedCustomerSubscription = this.sharedService.selectedCustomer$.subscribe(
-      () => {
-        this.sharedService.requestsSubject$.subscribe(
-          () => {
-            this.requestForm.reset();
-          }
-        );
-
-
+    this.usersService.resetFormSubject$.subscribe((state) => {
+      if (state){
+        this.requestForm.reset();
       }
-    );
+    });
   }
 
   ngOnInit() {
-    this.customers = this.customerService.getCustomers();
-
-    this.requestService.getRequests$().subscribe((requests) => {
-      this.request = requests;
-    });
-
     this.methodSelected = false;
     this.typeSelected = false;
 
@@ -85,51 +73,35 @@ export class RequestComponent implements OnInit, OnDestroy {
   errorCreatingRequest = false;
 
   createRequest() {
-    let customerDetails = sessionStorage.getItem('selectedCustomerDetails');
-    if (customerDetails) {
-      const customerData = JSON.parse(customerDetails);
-      this.initialBalance = customerData.balance;
-      this.selectedCustomer = customerData.userEmail;
-    }
+    const selectedCustomer = JSON.parse(
+      sessionStorage.getItem('selectedCustomer') || ''
+    );
 
-    if (this.requestForm.valid) {
-      const request: Request = this.requestForm.value;
-      if(Number(this.initialBalance) < Number(request.amount) && request.method === 'credit') {
-        console.error('Insufficient balance');
-        return;
-      }
+    if (selectedCustomer && this.requestForm.valid) {
+      const newRequest: Request = this.requestForm.value;
+      newRequest.userEmail = selectedCustomer.userEmail;
+      newRequest.createdAt = String(new Date());
 
-      const allCustomerData = sessionStorage.getItem('customerData');
-      if (allCustomerData) {
-        const allCustomers = [...JSON.parse(allCustomerData)];
-        const selectedCustomerData = allCustomers.find((customer: any) => customer.userEmail === this.selectedCustomer);
-        console.log('SELECTED CUSTOMER DATA', selectedCustomerData)
-        selectedCustomerData.balance = request.method === 'credit' ?  Number(this.initialBalance) - Number(request.amount) : this.initialBalance;
-        sessionStorage.setItem('selectedCustomerDetails', JSON.stringify(selectedCustomerData));
-        allCustomers.forEach((customer: any) => {
-          if (customer.userEmail === this.selectedCustomer) {
-            customer.balance = selectedCustomerData.balance;
-          }
-        });
-        sessionStorage.setItem('customerData', JSON.stringify(allCustomers))
-        this.sharedService.setSelectedCustomer();
-        let requestData = sessionStorage.getItem('requestsData');
-        if (requestData) {
-          const allRequests = [...JSON.parse(requestData)];
-          allRequests.unshift({
-            userEmail: this.selectedCustomer,
-            amount: request.amount,
-            method: request.method,
-            type: request.type,
-            createdAt: new Date(),
-          });
-          this.sharedService.setRequests(allRequests);
-          this.requestService.updateRequestSessionStorage();
-          sessionStorage.setItem('requestsData', JSON.stringify(allRequests));
+      if (newRequest.method === 'credit') {
+        if (newRequest.amount > selectedCustomer.balance) {
+          this.insufficientBalance = true;
+          return;
         }
-        return this.requestForm.reset();
-
+        selectedCustomer.balance -= newRequest.amount;
       }
+      selectedCustomer.requests.unshift(newRequest);
+
+      this.usersService
+        .updateCustomerRequest(selectedCustomer.id, selectedCustomer)
+        .subscribe(() => {
+          sessionStorage.setItem(
+            'selectedCustomer',
+            JSON.stringify(selectedCustomer)
+          );
+          this.usersService.setSelectedCustomer(selectedCustomer);
+          this.requestForm.reset();
+        });
+        this.insufficientBalance = false;
     }
   }
 
@@ -150,7 +122,7 @@ export class RequestComponent implements OnInit, OnDestroy {
         controls['amount'].setValue(6000);
         break;
       default:
-        controls['amount'].setValue(0);
+        controls['amount'].setValue(null);
         break;
     }
   }
@@ -163,7 +135,5 @@ export class RequestComponent implements OnInit, OnDestroy {
     return this.requestForm.get('type');
   }
 
-  ngOnDestroy(): void {
-    this.globalSubscriptions.forEach((x) => x.unsubscribe());
-  }
+  ngOnDestroy(): void {}
 }

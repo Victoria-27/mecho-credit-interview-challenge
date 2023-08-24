@@ -1,14 +1,17 @@
-<header>
-    <h1>Mech Auto Tech</h1>
-    <div>
-        <select [(ngModel)]="selectedCustomer" (change)="setSelectedCustomer()">
-            <option value="">Select Customer</option>
-            <option *ngFor="let data of customerEmailOptions$ | async" [value]="data.value">{{data.label}}</option>
+<div class="bg-gray-800 text-white p-4">
+    <header *ngIf="customers" class="bg-blue-500 py-4 px-6 text-black">
+      <h1 class="text-3xl font-semibold">Mecho Auto Tech</h1>
+      <div class="mt-4">
+        <select [(ngModel)]="selectedCustomer" (change)="setSelectedCustomer()" class="py-2 px-4 rounded border">
+          <option value="">Select Customer</option>
+          <option *ngFor="let customer of customers" [value]="customer.userEmail">{{ customer.userEmail }}</option>
         </select>
+      </div>
+    </header>
+    
+    <div *ngIf="selectedCustomer" class="mt-8">
+      <app-customer></app-customer>
+      <app-request></app-request>
+      <app-list-request></app-list-request>
     </div>
-</header>
-<div *ngIf="selectedCustomer">
-<app-customer></app-customer>
-<app-request></app-request>
-<app-list-request></app-list-request>
-</div>
+    

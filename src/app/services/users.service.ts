@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Customer } from '../models/customer.model';
@@ -10,7 +9,7 @@ import { Request } from '../models/request.model';
   providedIn: 'root',
 })
 export class UsersService {
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   private selectedCustomer = new BehaviorSubject<Customer>({});
   selectedCustomer$: Observable<Customer> =

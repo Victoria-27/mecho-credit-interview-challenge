@@ -50,6 +50,11 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.requestForm.controls['method'].valueChanges.subscribe({
       next: (method: string) => {
         this.methodSelected = !!method;
+        this.insufficientBalance = false;
+        if (method === 'cash') {
+          this.requestForm.controls['type'].setValue(null);
+          this.typeSelected = false;
+        }
         this.getServiceCost(method);
       },
     });
@@ -57,6 +62,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.requestForm.controls['type'].valueChanges.subscribe({
       next: (type: string) => {
         this.typeSelected = !!type;
+        this.insufficientBalance = false; 
         this.getServiceCost(type);
       },
     });
@@ -68,9 +74,6 @@ export class RequestComponent implements OnInit, OnDestroy {
         },
       })
     );
-  }
-  changeMethod(){
-    this.insufficientBalance = false
   }
 
   errorCreatingRequest = false;

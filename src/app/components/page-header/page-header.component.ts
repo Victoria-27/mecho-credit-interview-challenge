@@ -1,4 +1,3 @@
-import { ThisReceiver } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Customer } from 'src/app/models/customer.model';

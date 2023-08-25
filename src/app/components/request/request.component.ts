@@ -29,7 +29,13 @@ export class RequestComponent implements OnInit, OnDestroy {
   constructor(
     private formBuilder: FormBuilder,
     private usersService: UsersService
-  ) {}
+  ) {
+    this.usersService.resetFormSubject$.subscribe((state) => {
+      if (state) {
+        this.requestForm.reset();
+      }
+    });
+  }
 
   ngOnInit() {
     this.methodSelected = false;
@@ -63,6 +69,9 @@ export class RequestComponent implements OnInit, OnDestroy {
       })
     );
   }
+  changeMethod(){
+    this.insufficientBalance = false
+  }
 
   errorCreatingRequest = false;
 
@@ -85,7 +94,7 @@ export class RequestComponent implements OnInit, OnDestroy {
       }
       selectedCustomer.requests.unshift(newRequest);
       this.insufficientBalance = false;
-      this.usersService.updateCustomerRequest(selectedCustomer.id, selectedCustomer); 
+      this.usersService.updateCustomerRequest(selectedCustomer.userEmail, selectedCustomer); 
    
           sessionStorage.setItem(
             'selectedCustomer',

@@ -13,29 +13,29 @@ export class PageHeaderComponent implements OnInit {
   customerEmailOptions$: Observable<{ label: string; value: string }[]> = of(
     []
   );
-  selectedCustomer = '';
+  selectedCustomerEmail = '';
   customers!: Customer[] | null;
 
   constructor(private usersService: UsersService) {}
 
   ngOnInit(): void {
-  this.usersService.getCustomers();
-          this.customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
-    const selectedCustomer = JSON.parse(
-      sessionStorage.getItem('selectedCustomer') ?? ''
-    );
-    if (selectedCustomer) {
-      this.selectedCustomer = selectedCustomer.userEmail;
-    }
+    this.usersService.getCustomers();
+    this.customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
+
   }
 
   setSelectedCustomer() {
+    this.customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
+
+    
     const customer = this.customers?.find(
-      (customer) => customer.userEmail === this.selectedCustomer
+      (customer) => customer.userEmail === this.selectedCustomerEmail
     );
     if (customer) {
       sessionStorage.setItem('selectedCustomer', JSON.stringify(customer));
       this.usersService.setSelectedCustomer(customer);
     }
+    this.usersService.notifyResetForm();
   }
+
 }

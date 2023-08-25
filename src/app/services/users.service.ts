@@ -37,10 +37,19 @@ export class UsersService {
 
   updateCustomerRequest(userEmail: string, customer: Customer){
     const customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
+    console.log(customers);
     const filteredCustomers = customers.filter((customer: Customer) => customer.userEmail !== userEmail);
+    console.log(filteredCustomers);
     const updatedCustomers = [...filteredCustomers, customer];
 
     sessionStorage.setItem('customers', JSON.stringify(updatedCustomers));
     
+  }
+
+  private resetFormSubject = new BehaviorSubject<boolean>(false);
+  resetFormSubject$: Observable<boolean> = this.resetFormSubject.asObservable();
+
+  notifyResetForm() {
+    this.resetFormSubject.next(true);
   }
 }

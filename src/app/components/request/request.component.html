@@ -7,7 +7,7 @@
 
     <div class="mb-4">
         <label for="method" class="block text-gray-700 font-bold mb-2">Method</label>
-        <select formControlName="method" id="method" class="w-full p-2 border text-black rounded" required>
+        <select formControlName="method" (change)="changeMethod()" id="method" class="w-full p-2 border text-black rounded" required>
             <option value="cash">Cash</option>
             <option value="credit">Credit</option>
         </select>

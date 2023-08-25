@@ -39,4 +39,10 @@ describe('PageHeaderComponent', () => {
   it('should initialize with an empty selected customer', () => {
     expect(component.selectedCustomerEmail).toBe('');
   });
+
+  it('should populate customerEmailOptions$ on init', () => {
+    component.ngOnInit();
+    expect(component.customerEmailOptions$).toBeTruthy();
+  });
+
 });

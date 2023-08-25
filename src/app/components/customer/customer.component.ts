@@ -32,10 +32,10 @@ export class CustomerComponent implements OnInit, OnDestroy {
       this.customerDetail = selectedCustomer;
     }
   }
-    resetApp(){
+  resetApp() {
     sessionStorage.clear();
     window.location.reload();
-    }
+  }
 
   ngOnDestroy(): void {
     if (this.subscription) {
@@ -43,5 +43,3 @@ export class CustomerComponent implements OnInit, OnDestroy {
     }
   }
 }
-
-

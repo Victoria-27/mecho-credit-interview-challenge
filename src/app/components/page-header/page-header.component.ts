@@ -20,13 +20,11 @@ export class PageHeaderComponent implements OnInit {
   ngOnInit(): void {
     this.usersService.getCustomers();
     this.customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
-
   }
 
   setSelectedCustomer() {
     this.customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
 
-    
     const customer = this.customers?.find(
       (customer) => customer.userEmail === this.selectedCustomerEmail
     );
@@ -36,5 +34,4 @@ export class PageHeaderComponent implements OnInit {
     }
     this.usersService.notifyResetForm();
   }
-
 }

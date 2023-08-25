@@ -1,7 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
 import { RequestComponent } from './request.component';
 import { UsersService } from 'src/app/services/users.service';
 
@@ -26,4 +25,18 @@ describe('RequestComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+it('should update method selected when method is changed', () => {
+  component.ngOnInit()
+component.requestForm.controls['method'].setValue('cash');
+expect(component.methodSelected).toBe(true)
+});
+
+it('should update typeSelected when type value changes', () => {
+  component.ngOnInit();
+  component.requestForm.controls['type'].setValue('servicing');
+
+  expect(component.typeSelected).toBe(true);
+});
+
 });

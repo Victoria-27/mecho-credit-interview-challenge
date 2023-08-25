@@ -25,6 +25,8 @@ export class RequestComponent implements OnInit, OnDestroy {
   selectedCustomer: string | null = null;
   initialBalance: number | '' = '';
   insufficientBalance = false;
+  private methodSubscription: Subscription | null = null;
+  private typeSubscription: Subscription | null = null;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -47,7 +49,9 @@ export class RequestComponent implements OnInit, OnDestroy {
       type: [null, [Validators.required]],
     });
 
-    this.requestForm.controls['method'].valueChanges.subscribe({
+    this.methodSubscription = this.requestForm.controls[
+      'method'
+    ].valueChanges.subscribe({
       next: (method: string) => {
         this.methodSelected = !!method;
         this.insufficientBalance = false;
@@ -59,10 +63,12 @@ export class RequestComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.requestForm.controls['type'].valueChanges.subscribe({
+    this.typeSubscription = this.requestForm.controls[
+      'type'
+    ].valueChanges.subscribe({
       next: (type: string) => {
         this.typeSelected = !!type;
-        this.insufficientBalance = false; 
+        this.insufficientBalance = false;
         this.getServiceCost(type);
       },
     });
@@ -97,15 +103,17 @@ export class RequestComponent implements OnInit, OnDestroy {
       }
       selectedCustomer.requests.unshift(newRequest);
       this.insufficientBalance = false;
-      this.usersService.updateCustomerRequest(selectedCustomer.userEmail, selectedCustomer); 
-   
-          sessionStorage.setItem(
-            'selectedCustomer',
-            JSON.stringify(selectedCustomer)
-          );
-          this.usersService.setSelectedCustomer(selectedCustomer);
-          this.requestForm.reset();
+      this.usersService.updateCustomerRequest(
+        selectedCustomer.userEmail,
+        selectedCustomer
+      );
 
+      sessionStorage.setItem(
+        'selectedCustomer',
+        JSON.stringify(selectedCustomer)
+      );
+      this.usersService.setSelectedCustomer(selectedCustomer);
+      this.requestForm.reset();
     }
   }
 
@@ -139,5 +147,12 @@ export class RequestComponent implements OnInit, OnDestroy {
     return this.requestForm.get('type');
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    if (this.methodSubscription) {
+      this.methodSubscription.unsubscribe();
+    }
+    if (this.typeSubscription) {
+      this.typeSubscription.unsubscribe();
+    }
+  }
 }

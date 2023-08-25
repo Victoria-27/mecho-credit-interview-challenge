@@ -13,7 +13,7 @@ export class ListRequestComponent implements OnInit, OnDestroy {
   private requestsSubscription: Subscription | undefined;
 
   constructor(private usersService: UsersService) {
-    this.usersService.selectedCustomer$.subscribe((customer) => {
+    this.requestsSubscription = this.usersService.selectedCustomer$.subscribe((customer) => {
       if (customer) {
         this.requests = customer?.requests;
       }

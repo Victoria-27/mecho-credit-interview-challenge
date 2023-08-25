@@ -1,0 +1,6 @@
+<div class="flex-1 flex flex-col items-center justify-center relative">
+  <button class="absolute right-0 top-0 p-2 bg-red-500 text-white rounded" (click)="resetApp()">Reset App</button>
+  <h2 class="text-xl font-bold mb-2">Customer Details</h2>
+  <p class="text-blue-500"><span class="font-bold">Email:</span> {{customerDetail.userEmail}}</p>
+  <p><span class="font-bold">Balance:</span> {{ customerDetail.balance | currency }}</p>
+</div>

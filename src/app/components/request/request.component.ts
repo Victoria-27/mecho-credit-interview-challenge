@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  AbstractControl,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { RequestService } from 'src/app/services/request/request.service';
 import { Request } from 'src/app/models/request.model';
+import { CustomerService } from 'src/app/services/customer/customer.service';
 import { Customer } from 'src/app/models/customer.model';
 import { Subscription } from 'rxjs';
-import { UsersService } from 'src/app/services/users.service';
+import { SharedService } from 'src/app/services/sharedService/shared.service';
+
 
 @Component({
   selector: 'app-request',
@@ -24,20 +22,38 @@ export class RequestComponent implements OnInit, OnDestroy {
   typeSelected = false;
   selectedCustomer: string | null = null;
   initialBalance: number | '' = '';
-  insufficientBalance = false;
+  isInsufficientBalance = false;
+  private selectedCustomerSubscription: Subscription;
 
   constructor(
     private formBuilder: FormBuilder,
-    private usersService: UsersService
+    private requestService: RequestService,
+    private customerService: CustomerService,
+    private sharedService: SharedService
   ) {
-    this.usersService.resetFormSubject$.subscribe((state) => {
-      if (state) {
-        this.resetForm();
+    this.selectedCustomerSubscription = this.sharedService.selectedCustomer$.subscribe(
+      () => {
+        this.sharedService.requestsSubject$.subscribe(
+          () => {
+            if (this.requestForm) {
+              this.requestForm.reset();
+            }
+            // this.requestForm.reset();
+          }
+        );
+
+
       }
-    });
+    );
   }
 
   ngOnInit() {
+    this.customers = this.customerService.getCustomers();
+
+    this.requestService.getRequests$().subscribe((requests) => {
+      this.request = requests;
+    });
+
     this.methodSelected = false;
     this.typeSelected = false;
 
@@ -50,7 +66,6 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.requestForm.controls['method'].valueChanges.subscribe({
       next: (method: string) => {
         this.methodSelected = !!method;
-        this.insufficientBalance = false;
         this.getServiceCost(method);
       },
     });
@@ -58,7 +73,6 @@ export class RequestComponent implements OnInit, OnDestroy {
     this.requestForm.controls['type'].valueChanges.subscribe({
       next: (type: string) => {
         this.typeSelected = !!type;
-        this.insufficientBalance = false;
         this.getServiceCost(type);
       },
     });
@@ -75,40 +89,53 @@ export class RequestComponent implements OnInit, OnDestroy {
   errorCreatingRequest = false;
 
   createRequest() {
-    const selectedCustomer = JSON.parse(
-      sessionStorage.getItem('selectedCustomer') || ''
-    );
-
-    if (selectedCustomer && this.requestForm.valid) {
-      const newRequest: Request = this.requestForm.value;
-      newRequest.userEmail = selectedCustomer.userEmail;
-      newRequest.createdAt = String(new Date());
-
-      if (newRequest.method === 'credit') {
-        if (newRequest.amount > selectedCustomer.balance) {
-          this.insufficientBalance = true;
-          return;
-        }
-        selectedCustomer.balance -= newRequest.amount;
-      }
-      selectedCustomer.requests.unshift(newRequest);
-
-      this.usersService
-        .updateCustomerRequest(selectedCustomer.id, selectedCustomer)
-        .subscribe(() => {
-          sessionStorage.setItem(
-            'selectedCustomer',
-            JSON.stringify(selectedCustomer)
-          );
-          this.usersService.setSelectedCustomer(selectedCustomer);
-          this.resetForm();
-        });
+    let customerDetails = sessionStorage.getItem('selectedCustomerDetails');
+    if (customerDetails) {
+      const customerData = JSON.parse(customerDetails);
+      this.initialBalance = customerData.balance;
+      this.selectedCustomer = customerData.userEmail;
     }
-  }
 
-  private resetForm() {
-    this.requestForm.reset();
-    this.insufficientBalance = false;
+    if (this.requestForm.valid) {
+      const request: Request = this.requestForm.value;
+      if(Number(this.initialBalance) < Number(request.amount) && request.method === 'credit') {
+        console.error('Insufficient balance');
+        this.isInsufficientBalance = true;
+        return;
+      }
+
+      const allCustomerData = sessionStorage.getItem('customerData');
+      if (allCustomerData) {
+        const allCustomers = [...JSON.parse(allCustomerData)];
+        const selectedCustomerData = allCustomers.find((customer: any) => customer.userEmail === this.selectedCustomer);
+        console.log('SELECTED CUSTOMER DATA', selectedCustomerData)
+        selectedCustomerData.balance = request.method === 'credit' ?  Number(this.initialBalance) - Number(request.amount) : this.initialBalance;
+        sessionStorage.setItem('selectedCustomerDetails', JSON.stringify(selectedCustomerData));
+        allCustomers.forEach((customer: any) => {
+          if (customer.userEmail === this.selectedCustomer) {
+            customer.balance = selectedCustomerData.balance;
+          }
+        });
+        sessionStorage.setItem('customerData', JSON.stringify(allCustomers))
+        this.sharedService.setSelectedCustomer();
+        let requestData = sessionStorage.getItem('requestsData');
+        if (requestData) {
+          const allRequests = [...JSON.parse(requestData)];
+          allRequests.unshift({
+            userEmail: this.selectedCustomer,
+            amount: request.amount,
+            method: request.method,
+            type: request.type,
+            createdAt: new Date(),
+          });
+          this.sharedService.setRequests(allRequests);
+          this.requestService.updateRequestSessionStorage();
+          sessionStorage.setItem('requestsData', JSON.stringify(allRequests));
+        }
+        return this.requestForm.reset();
+
+      }
+    }
   }
 
   private getServiceCost(type: string) {
@@ -141,5 +168,7 @@ export class RequestComponent implements OnInit, OnDestroy {
     return this.requestForm.get('type');
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this.globalSubscriptions.forEach((x) => x.unsubscribe());
+  }
 }

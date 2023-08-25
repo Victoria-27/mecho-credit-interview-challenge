@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Customer } from 'src/app/models/customer.model';
-import { UsersService } from 'src/app/services/users.service';
+import { map } from 'rxjs/operators';
+import { SharedService } from 'src/app/services/sharedService/shared.service';
 
 @Component({
   selector: 'app-page-header',
@@ -13,32 +13,34 @@ export class PageHeaderComponent implements OnInit {
     []
   );
   selectedCustomer = '';
-  customers!: Customer[] | null;
 
-  constructor(private usersService: UsersService) {}
+  constructor(private sharedService: SharedService) {}
 
   ngOnInit(): void {
-    this.usersService.getCustomers().subscribe((customers: Customer[]) => {
-      sessionStorage.setItem('customers', JSON.stringify(customers));
-      this.customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
-    });
-    console.log('hello')
-    const selectedCustomer = JSON.parse(
-      sessionStorage.getItem('selectedCustomer') ?? ''
-    );
-    if (selectedCustomer) {
-      this.selectedCustomer = selectedCustomer.userEmail;
+    const customerData = sessionStorage.getItem('customerData');
+    const selectedCustomer = sessionStorage.getItem('selectedCustomer');
+
+    if (customerData !== null) {
+      this.customerEmailOptions$ = of(JSON.parse(customerData)).pipe(
+        map((customers: any) =>
+          customers.map((customer: any) => ({
+            label: customer.userEmail,
+            value: customer.userEmail,
+          }))
+        )
+      );
+    }
+
+    if (selectedCustomer !== null) {
+      this.selectedCustomer = JSON.parse(selectedCustomer);
     }
   }
 
   setSelectedCustomer() {
-    const customer = this.customers?.find(
-      (customer) => customer.userEmail === this.selectedCustomer
+    sessionStorage.setItem(
+      'selectedCustomer',
+      JSON.stringify(this.selectedCustomer)
     );
-    if (customer) {
-      sessionStorage.setItem('selectedCustomer', JSON.stringify(customer));
-      this.usersService.setSelectedCustomer(customer);
-    }
-    this.usersService.notifyResetForm();
+    this.sharedService.setSelectedCustomer();
   }
 }

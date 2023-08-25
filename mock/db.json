@@ -3,10 +3,24 @@
     {
       "id": 1,
       "userEmail": "melissa.brown@example.com",
-      "balance": 81000,
+      "balance": 67000,
       "createdAt": "2021-08-01T00:00:00.000Z",
       "updatedAt": "2021-10-01T00:00:00.000Z",
       "requests": [
+        {
+          "amount": 10000,
+          "method": "credit",
+          "type": "repairs",
+          "userEmail": "melissa.brown@example.com",
+          "createdAt": "Fri Aug 25 2023 00:22:13 GMT+0100 (West Africa Standard Time)"
+        },
+        {
+          "amount": 4000,
+          "method": "credit",
+          "type": "servicing",
+          "userEmail": "melissa.brown@example.com",
+          "createdAt": "Fri Aug 25 2023 00:22:05 GMT+0100 (West Africa Standard Time)"
+        },
         {
           "amount": 4000,
           "method": "credit",

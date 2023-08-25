@@ -28,7 +28,7 @@
         <input type="number" id="amount" formControlName="amount" readonly class="w-full p-2 border text-black rounded">
     </div>
 
-    <div *ngIf="insufficientBalance" class="text-red-600 mt-2">
+    <div *ngIf="isInsufficientBalance" class="text-red-600 mt-2">
         Insufficient balance for this transaction.
     </div>
 

@@ -2,6 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Customer } from '../models/customer.model';
+import { CUSTOMER } from '../data/customer.data';
+import { REQUESTS } from '../data/requests.data';
+import { Request } from '../models/request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,30 +12,35 @@ import { Customer } from '../models/customer.model';
 export class UsersService {
   constructor(private http: HttpClient) {}
 
-  BASE_URL = 'http://localhost:3000/customers';
-
   private selectedCustomer = new BehaviorSubject<Customer>({});
   selectedCustomer$: Observable<Customer> =
     this.selectedCustomer.asObservable();
 
-  getCustomers(): Observable<Customer[]> {
-    return this.http.get(this.BASE_URL) as Observable<Customer[]>;
-  }
-
-  updateCustomerRequest(id: number, customer: Customer): Observable<Customer> {
-    return this.http.put(
-      `${this.BASE_URL}/${id}`,
-      customer
-    ) as Observable<Customer>;
-  } 
-  private resetFormSubject = new BehaviorSubject<boolean>(false);
-  resetFormSubject$: Observable<boolean> = this.resetFormSubject.asObservable();
-
-  notifyResetForm() {
-    this.resetFormSubject.next(true);
-  }
-
+  
   setSelectedCustomer(customer: Customer) {
     this.selectedCustomer.next(customer);
+  }
+
+  getCustomers(){
+    const customers = CUSTOMER;
+    const requests = REQUESTS;
+   const updatedCustomers = customers.map((customer) => {
+      const customerRequests = requests.filter((request) => request.userEmail === customer.userEmail);
+      return {
+        ...customer,
+        requests: customerRequests
+      }
+    }
+    )
+    sessionStorage.setItem('customers', JSON.stringify(updatedCustomers));
+  }
+
+  updateCustomerRequest(userEmail: string, customer: Customer){
+    const customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
+    const filteredCustomers = customers.filter((customer: Customer) => customer.userEmail !== userEmail);
+    const updatedCustomers = [...filteredCustomers, customer];
+
+    sessionStorage.setItem('customers', JSON.stringify(updatedCustomers));
+    
   }
 }

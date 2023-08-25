@@ -1,7 +1,8 @@
+import { ThisReceiver } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { SharedService } from 'src/app/services/sharedService/shared.service';
+import { Customer } from 'src/app/models/customer.model';
+import { UsersService } from 'src/app/services/users.service';
 
 @Component({
   selector: 'app-page-header',
@@ -13,34 +14,28 @@ export class PageHeaderComponent implements OnInit {
     []
   );
   selectedCustomer = '';
+  customers!: Customer[] | null;
 
-  constructor(private sharedService: SharedService) {}
+  constructor(private usersService: UsersService) {}
 
   ngOnInit(): void {
-    const customerData = sessionStorage.getItem('customerData');
-    const selectedCustomer = sessionStorage.getItem('selectedCustomer');
-
-    if (customerData !== null) {
-      this.customerEmailOptions$ = of(JSON.parse(customerData)).pipe(
-        map((customers: any) =>
-          customers.map((customer: any) => ({
-            label: customer.userEmail,
-            value: customer.userEmail,
-          }))
-        )
-      );
-    }
-
-    if (selectedCustomer !== null) {
-      this.selectedCustomer = JSON.parse(selectedCustomer);
+  this.usersService.getCustomers();
+          this.customers = JSON.parse(sessionStorage.getItem('customers') ?? '');
+    const selectedCustomer = JSON.parse(
+      sessionStorage.getItem('selectedCustomer') ?? ''
+    );
+    if (selectedCustomer) {
+      this.selectedCustomer = selectedCustomer.userEmail;
     }
   }
 
   setSelectedCustomer() {
-    sessionStorage.setItem(
-      'selectedCustomer',
-      JSON.stringify(this.selectedCustomer)
+    const customer = this.customers?.find(
+      (customer) => customer.userEmail === this.selectedCustomer
     );
-    this.sharedService.setSelectedCustomer();
+    if (customer) {
+      sessionStorage.setItem('selectedCustomer', JSON.stringify(customer));
+      this.usersService.setSelectedCustomer(customer);
+    }
   }
 }
